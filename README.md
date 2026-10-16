@@ -4,6 +4,8 @@ SRT-synced Phonics Man animation with the song baked into the page (no file pick
 
 **Repo:** https://github.com/MasterDaneDing/v-sound
 
-**Live page (GitHub Pages):** https://masterdaneding.github.io/v-sound/
+**Live page (works now):** https://cdn.jsdelivr.net/gh/MasterDaneDing/v-sound@main/index.html
 
-Open the live page — audio tries to autoplay. If the browser blocks unmuted autoplay, tap **Play** once.
+**GitHub Pages (after you enable Pages on main /):** https://masterdaneding.github.io/v-sound/
+
+Audio tries to autoplay. If the browser blocks it, tap **Play** once.
