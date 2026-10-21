@@ -146,7 +146,7 @@
     }
     .lyric-banner {
       position: absolute;
-      bottom: 18px;
+      bottom: 78px;
       left: 50%;
       transform: translateX(-50%);
       width: 92%;
@@ -238,7 +238,7 @@
       pointer-events: auto;
       position: absolute;
       left: 10px;
-      bottom: 110px;
+      bottom: 78px;
       width: 168px;
       height: 168px;
       display: grid;
@@ -281,22 +281,29 @@
     .mode-btns {
       pointer-events: auto;
       position: absolute;
+      left: 10px;
       right: 10px;
-      bottom: 110px;
+      bottom: 10px;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
       touch-action: manipulation;
+      z-index: 6;
     }
     .mode-btn {
-      min-width: 132px;
-      min-height: 56px;
-      padding: 12px 16px;
+      flex: 1 1 0;
+      min-width: 108px;
+      max-width: 180px;
+      min-height: 52px;
+      padding: 12px 14px;
       border-radius: 16px;
       border: 3px solid #9d4edd;
       background: rgba(34, 39, 66, 0.94);
       color: #fff;
-      font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+      font-size: clamp(0.9rem, 2.2vw, 1.1rem);
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
@@ -339,12 +346,11 @@
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.06); }
     }
-    .mode-btns { gap: 8px; }
-    .mode-btn { min-width: 120px; min-height: 48px; padding: 10px 12px; font-size: clamp(0.85rem, 2.1vw, 1.05rem); }
     @media (max-width: 700px) {
-      .dpad { width: 150px; height: 150px; bottom: 96px; }
-      .mode-btns { bottom: 96px; }
-      .mode-btn { min-width: 108px; min-height: 46px; }
+      .lyric-banner { bottom: 70px; padding: 12px 16px; }
+      .dpad { width: 150px; height: 150px; bottom: 70px; }
+      .mode-btns { bottom: 8px; gap: 6px; }
+      .mode-btn { min-width: 96px; min-height: 48px; padding: 10px 10px; font-size: clamp(0.82rem, 2.1vw, 1rem); }
       .phonics-hint { max-width: 55%; }
       .getup-btn { top: 54px; }
     }
