@@ -234,50 +234,46 @@
       line-height: 1.35;
       pointer-events: none;
     }
-    .dpad {
+    .vstick {
       pointer-events: auto;
       position: absolute;
-      left: 10px;
+      left: 12px;
       bottom: 78px;
-      width: 168px;
-      height: 168px;
-      display: grid;
-      grid-template-areas:
-        ". up ."
-        "left . right"
-        ". down .";
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: 1fr 1fr 1fr;
-      gap: 6px;
-      touch-action: none;
-    }
-    .dpad-btn {
-      width: 100%;
-      height: 100%;
-      min-width: 52px;
-      min-height: 52px;
-      border-radius: 16px;
-      border: 3px solid #ffd166;
-      background: rgba(34, 39, 66, 0.92);
-      color: #fff;
-      font-size: 1.35rem;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      width: 148px;
+      height: 148px;
       touch-action: none;
       -webkit-user-select: none;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      z-index: 6;
     }
-    .dpad-btn:active, .dpad-btn.held {
-      background: #ff9e00;
-      color: #1a1a1a;
-      transform: scale(0.96);
+    .vstick-base {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 209, 102, 0.9);
+      background: radial-gradient(circle at 50% 42%, rgba(70, 78, 120, 0.55), rgba(18, 21, 41, 0.82));
+      box-shadow: 0 4px 16px rgba(0,0,0,0.45), inset 0 0 28px rgba(0,0,0,0.28);
     }
-    .dpad-up { grid-area: up; }
-    .dpad-left { grid-area: left; }
-    .dpad-right { grid-area: right; }
-    .dpad-down { grid-area: down; }
+    .vstick-knob {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 62px;
+      height: 62px;
+      margin-left: -31px;
+      margin-top: -31px;
+      border-radius: 50%;
+      border: 3px solid #ffd166;
+      background: linear-gradient(145deg, #5c669c, #2a3158);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      touch-action: none;
+      will-change: transform;
+    }
+    .vstick-knob.active {
+      background: linear-gradient(145deg, #ffb703, #fb8500);
+      border-color: #fff3b0;
+    }
     .mode-btns {
       pointer-events: auto;
       position: absolute;
@@ -348,7 +344,8 @@
     }
     @media (max-width: 700px) {
       .lyric-banner { bottom: 70px; padding: 12px 16px; }
-      .dpad { width: 150px; height: 150px; bottom: 70px; }
+      .vstick { width: 132px; height: 132px; bottom: 70px; }
+      .vstick-knob { width: 56px; height: 56px; margin-left: -28px; margin-top: -28px; }
       .mode-btns { bottom: 8px; gap: 6px; }
       .mode-btn { min-width: 96px; min-height: 48px; padding: 10px 10px; font-size: clamp(0.82rem, 2.1vw, 1rem); }
       .phonics-hint { max-width: 55%; }
@@ -383,14 +380,12 @@
   <div class="stage-container">
     <canvas id="stage" width="1280" height="720"></canvas>
     <div class="phonics-hud" id="phonicsHud">
-      <div class="phonics-hint" id="phonicsHint">Arrows / WASD move · 1 Dance · 2 Cheer · 3 Scared · 4 Wild · or tap Control me</div>
+      <div class="phonics-hint" id="phonicsHint">Joystick / Arrows / WASD · 1 Dance · 2 Cheer · 3 Scared · 4 Wild · or tap Control me</div>
       <button type="button" class="control-me-btn" id="controlMeBtn" aria-pressed="false">🎮 Control me</button>
       <button type="button" class="getup-btn" id="getUpBtn" hidden>🆙 Get up!</button>
-      <div class="dpad" id="dpad" aria-label="Move Phonics Man">
-        <button type="button" class="dpad-btn dpad-up" data-dir="up" aria-label="Up">▲</button>
-        <button type="button" class="dpad-btn dpad-left" data-dir="left" aria-label="Left">◀</button>
-        <button type="button" class="dpad-btn dpad-right" data-dir="right" aria-label="Right">▶</button>
-        <button type="button" class="dpad-btn dpad-down" data-dir="down" aria-label="Down">▼</button>
+      <div class="vstick" id="vstick" aria-label="Move Phonics Man with virtual joystick">
+        <div class="vstick-base" aria-hidden="true"></div>
+        <div class="vstick-knob" id="vstickKnob" aria-hidden="true"></div>
       </div>
       <div class="mode-btns" id="modeBtns">
         <button type="button" class="mode-btn active" data-mode="dance">💃 Dance</button>
@@ -440,8 +435,8 @@
     // ============================================================================
     const PHONICS_X_MIN = 90;
     const PHONICS_X_MAX = 1190;
-    // Grounded hill/stage band — min reaches further up-hill behind Cobra (~335–357 plane)
-    const PHONICS_Y_MIN = 288;
+    // Grounded hill/stage band — min Y raised so max "up the hill" stays on green (not sky)
+    const PHONICS_Y_MIN = 330;
     const PHONICS_Y_MAX = 555;
     const PHONICS_MODES = ['dance', 'cheer', 'scared', 'wild'];
 
@@ -471,7 +466,8 @@
     const getUpBtn = document.getElementById('getUpBtn');
     const phonicsHint = document.getElementById('phonicsHint');
     const modeBtns = Array.from(document.querySelectorAll('.mode-btn'));
-    const dpadBtns = Array.from(document.querySelectorAll('.dpad-btn'));
+    const vstick = document.getElementById('vstick');
+    const vstickKnob = document.getElementById('vstickKnob');
 
     function setModeButtons(mode) {
       modeBtns.forEach((btn) => {
@@ -480,10 +476,10 @@
     }
 
     function phonicsHintIdle() {
-      return 'Arrows / WASD move · 1 Dance · 2 Cheer · 3 Scared · 4 Wild · or tap Control me';
+      return 'Joystick / Arrows / WASD · 1 Dance · 2 Cheer · 3 Scared · 4 Wild · or tap Control me';
     }
     function phonicsHintActive() {
-      return 'You control Phonics Man · Arrows/WASD · 1–4 modes · drag him · watch out for Cobra Man!';
+      return 'You control Phonics Man · Joystick/Arrows/WASD · 1–4 modes · drag him · watch out for Cobra Man!';
     }
     function phonicsHintRagdoll() {
       return '😵 Bonked by Cobra Man! Tap Get up, press Space / G, or wait a moment…';
@@ -509,7 +505,7 @@
         controlMeBtn.textContent = '🎮 Control me';
         phonicsHint.textContent = phonicsHintIdle();
         phonicsPlayer.keys.up = phonicsPlayer.keys.down = phonicsPlayer.keys.left = phonicsPlayer.keys.right = false;
-        dpadBtns.forEach((b) => b.classList.remove('held'));
+        resetJoystick();
         phonicsPlayer.ragdoll = false;
         phonicsPlayer.recovering = false;
         phonicsPlayer.ragdollAge = 0;
@@ -535,7 +531,7 @@
       phonicsPlayer.flopSpin = (Math.random() < 0.5 ? -1 : 1) * (2.2 + Math.random() * 1.4);
       phonicsPlayer.flopAngle = 0;
       phonicsPlayer.keys.up = phonicsPlayer.keys.down = phonicsPlayer.keys.left = phonicsPlayer.keys.right = false;
-      dpadBtns.forEach((b) => b.classList.remove('held'));
+      resetJoystick();
       phonicsPlayer.dragging = false;
       activatePhonicsControl('ragdoll');
       phonicsHint.textContent = phonicsHintRagdoll();
@@ -597,29 +593,84 @@
       if (pressed) activatePhonicsControl('move');
     }
 
-    dpadBtns.forEach((btn) => {
-      const dir = btn.dataset.dir;
-      const press = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        try { btn.setPointerCapture(e.pointerId); } catch (_) {}
-        btn.classList.add('held');
-        setDir(dir, true);
-      };
-      const release = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        btn.classList.remove('held');
-        setDir(dir, false);
-      };
-      btn.addEventListener('pointerdown', press);
-      btn.addEventListener('pointerup', release);
-      btn.addEventListener('pointercancel', release);
-      btn.addEventListener('lostpointercapture', () => {
-        btn.classList.remove('held');
-        setDir(dir, false);
-      });
+    // Circular virtual joystick (iPad-game style) → same keys as WASD/arrows
+    const JOY_DEAD = 0.22;
+    const JOY_DIR_THR = 0.32;
+    let joyPointerId = null;
+
+    function joyMaxTravel() {
+      return Math.max(28, (vstick.clientWidth || 148) * 0.5 - 34);
+    }
+
+    function clearJoyKeys() {
+      phonicsPlayer.keys.up = false;
+      phonicsPlayer.keys.down = false;
+      phonicsPlayer.keys.left = false;
+      phonicsPlayer.keys.right = false;
+    }
+
+    function resetJoystick() {
+      joyPointerId = null;
+      if (vstickKnob) {
+        vstickKnob.style.transform = 'translate(0px, 0px)';
+        vstickKnob.classList.remove('active');
+      }
+      clearJoyKeys();
+    }
+
+    function applyJoyVector(dx, dy) {
+      const maxR = joyMaxTravel();
+      const dist = Math.hypot(dx, dy);
+      let nx = 0, ny = 0;
+      if (dist > 0.001) {
+        const clamped = Math.min(dist, maxR);
+        nx = (dx / dist) * clamped;
+        ny = (dy / dist) * clamped;
+      }
+      vstickKnob.style.transform = `translate(${nx}px, ${ny}px)`;
+      const mag = Math.hypot(nx, ny) / maxR;
+      if (mag < JOY_DEAD || phonicsPlayer.ragdoll || phonicsPlayer.recovering) {
+        clearJoyKeys();
+        vstickKnob.classList.toggle('active', mag >= JOY_DEAD && !phonicsPlayer.ragdoll && !phonicsPlayer.recovering);
+        return;
+      }
+      vstickKnob.classList.add('active');
+      const ux = nx / maxR;
+      const uy = ny / maxR;
+      phonicsPlayer.keys.left = ux < -JOY_DIR_THR;
+      phonicsPlayer.keys.right = ux > JOY_DIR_THR;
+      phonicsPlayer.keys.up = uy < -JOY_DIR_THR;
+      phonicsPlayer.keys.down = uy > JOY_DIR_THR;
+      activatePhonicsControl('move');
+    }
+
+    function joyCenter() {
+      const r = vstick.getBoundingClientRect();
+      return { cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+    }
+
+    vstick.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (phonicsPlayer.ragdoll || phonicsPlayer.recovering) return;
+      joyPointerId = e.pointerId;
+      try { vstick.setPointerCapture(e.pointerId); } catch (_) {}
+      const { cx, cy } = joyCenter();
+      applyJoyVector(e.clientX - cx, e.clientY - cy);
     });
+    vstick.addEventListener('pointermove', (e) => {
+      if (joyPointerId !== e.pointerId) return;
+      e.preventDefault();
+      const { cx, cy } = joyCenter();
+      applyJoyVector(e.clientX - cx, e.clientY - cy);
+    });
+    const endJoy = (e) => {
+      if (joyPointerId !== null && e.pointerId !== joyPointerId) return;
+      resetJoystick();
+    };
+    vstick.addEventListener('pointerup', endJoy);
+    vstick.addEventListener('pointercancel', endJoy);
+    vstick.addEventListener('lostpointercapture', () => { resetJoystick(); });
 
     const keyDirMap = {
       ArrowUp: 'up', KeyW: 'up',
