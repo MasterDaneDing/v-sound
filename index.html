@@ -435,8 +435,8 @@
     // ============================================================================
     const PHONICS_X_MIN = 90;
     const PHONICS_X_MAX = 1190;
-    // Grounded hill/stage band — min reaches Cobra Man's depth plane (~335–357)
-    const PHONICS_Y_MIN = 320;
+    // Grounded hill/stage band — min reaches further up-hill behind Cobra (~335–357 plane)
+    const PHONICS_Y_MIN = 288;
     const PHONICS_Y_MAX = 555;
     const PHONICS_MODES = ['dance', 'cheer', 'scared', 'wild'];
 
@@ -1495,9 +1495,12 @@
       ctx.lineWidth = 5;
       ctx.strokeStyle = '#111';
       if (mode === 'scared') {
+        // Raised/arched fearful brows (not angry V-brows)
         ctx.beginPath();
-        ctx.moveTo(-28, -18); ctx.lineTo(-8, -10);
-        ctx.moveTo(28, -18); ctx.lineTo(8, -10);
+        ctx.moveTo(-30, -16);
+        ctx.quadraticCurveTo(-18, -30, -6, -22);
+        ctx.moveTo(30, -16);
+        ctx.quadraticCurveTo(18, -30, 6, -22);
         ctx.stroke();
       } else {
         ctx.beginPath();
@@ -1525,7 +1528,14 @@
       // Mouth
       ctx.strokeStyle = '#111';
       ctx.lineWidth = 4;
-      if (mode === 'scared' || isRagdoll) {
+      if (mode === 'scared') {
+        // Open fearful O-mouth
+        ctx.fillStyle = '#7a1c1c';
+        ctx.beginPath();
+        ctx.ellipse(0, 26, 12, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else if (isRagdoll) {
         ctx.fillStyle = '#7a1c1c';
         ctx.beginPath();
         ctx.ellipse(0, 26, 10, 12, 0, 0, Math.PI * 2);
