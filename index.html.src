@@ -1,0 +1,2467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The "V" Sound - Exact SRT Synced Animation</title>
+  <style>
+    :root {
+      --bg-dark: #16192b;
+      --panel-bg: #222742;
+      --accent: #ffcc00;
+      --text-light: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 12px;
+      user-select: none;
+    }
+    .control-bar {
+      width: 100%;
+      max-width: 1080px;
+      background: var(--panel-bg);
+      padding: 12px 18px;
+      border-radius: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      margin-bottom: 12px;
+      border: 2px solid #363e66;
+    }
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .file-btn {
+      background: linear-gradient(135deg, #7b2cbf, #5a189a);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid #9d4edd;
+      transition: transform 0.15s, background 0.2s;
+      display: inline-block;
+      font-size: 0.95rem;
+    }
+    .file-btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #9d4edd, #7b2cbf);
+    }
+    input[type="file"] {
+      display: none;
+    }
+    button.btn {
+      background: linear-gradient(135deg, #ff9e00, #ff6d00);
+      color: #1a1a1a;
+      border: 2px solid #ffd166;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    button.btn:hover {
+      transform: translateY(-2px);
+    }
+    button.btn.secondary {
+      background: #3a416f;
+      color: #fff;
+      border-color: #5c67a3;
+    }
+    .scrubber-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 220px;
+    }
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .time-readout {
+      font-family: monospace;
+      font-size: 0.95rem;
+      background: #131629;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid #363e66;
+      min-width: 115px;
+      text-align: center;
+    }
+    .offset-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      background: #171b30;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #363e66;
+    }
+    .offset-box input {
+      width: 64px;
+      background: #0d1021;
+      color: var(--accent);
+      border: 1px solid #4a548c;
+      border-radius: 5px;
+      padding: 3px 6px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .stage-container {
+      position: relative;
+      width: 100%;
+      max-width: 1080px;
+      aspect-ratio: 16 / 9;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.65);
+      border: 4px solid #3c4470;
+      background: #87ceeb;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .lyric-banner {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      background: rgba(18, 21, 41, 0.92);
+      border: 3px solid #ffcc00;
+      border-radius: 20px;
+      padding: 14px 24px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.65);
+      pointer-events: none;
+      transition: transform 0.15s ease;
+    }
+    .lyric-line {
+      font-size: clamp(1.35rem, 3.2vw, 2.45rem);
+      color: #ffffff;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      line-height: 1.25;
+      text-shadow: 0 3px 6px rgba(0,0,0,0.8);
+    }
+    /* Bold & highlight every V word! */
+    .lyric-line b.v-word {
+      font-weight: 900;
+      color: #ffea00;
+      text-shadow: 0 0 12px rgba(255, 234, 0, 0.7), 0 4px 0 #d84315, 0 6px 10px rgba(0,0,0,0.9);
+      display: inline-block;
+      transform: scale(1.08);
+      margin: 0 3px;
+      padding: 0 5px;
+      background: rgba(255, 87, 34, 0.25);
+      border-radius: 8px;
+      border-bottom: 3px solid #ff9100;
+    }
+    .lyric-sub {
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: #b8c1ec;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+    .status-pill {
+      font-size: 0.82rem;
+      color: #ffd166;
+    }
+
+    /* Phonics Man player controls (keyboard + iPad touch) */
+    .phonics-hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .control-me-btn {
+      pointer-events: auto;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #7b2cbf, #5a189a);
+      color: #fff;
+      border: 3px solid #ffcc00;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 800;
+      font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .control-me-btn.on {
+      background: linear-gradient(135deg, #2a9d8f, #1b6b63);
+      border-color: #80ffdb;
+    }
+    .phonics-hint {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      max-width: min(58%, 420px);
+      background: rgba(18, 21, 41, 0.82);
+      border: 2px solid #5c67a3;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: clamp(0.72rem, 1.8vw, 0.92rem);
+      color: #ffd166;
+      font-weight: 700;
+      line-height: 1.35;
+      pointer-events: none;
+    }
+    .dpad {
+      pointer-events: auto;
+      position: absolute;
+      left: 10px;
+      bottom: 110px;
+      width: 168px;
+      height: 168px;
+      display: grid;
+      grid-template-areas:
+        ". up ."
+        "left . right"
+        ". down .";
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 6px;
+      touch-action: none;
+    }
+    .dpad-btn {
+      width: 100%;
+      height: 100%;
+      min-width: 52px;
+      min-height: 52px;
+      border-radius: 16px;
+      border: 3px solid #ffd166;
+      background: rgba(34, 39, 66, 0.92);
+      color: #fff;
+      font-size: 1.35rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .dpad-btn:active, .dpad-btn.held {
+      background: #ff9e00;
+      color: #1a1a1a;
+      transform: scale(0.96);
+    }
+    .dpad-up { grid-area: up; }
+    .dpad-left { grid-area: left; }
+    .dpad-right { grid-area: right; }
+    .dpad-down { grid-area: down; }
+    .mode-btns {
+      pointer-events: auto;
+      position: absolute;
+      right: 10px;
+      bottom: 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      touch-action: manipulation;
+    }
+    .mode-btn {
+      min-width: 132px;
+      min-height: 56px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 3px solid #9d4edd;
+      background: rgba(34, 39, 66, 0.94);
+      color: #fff;
+      font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, #ff9e00, #ff6d00);
+      border-color: #ffd166;
+      color: #1a1a1a;
+    }
+    .mode-btn[data-mode="wild"].active {
+      background: linear-gradient(135deg, #ff006e, #8338ec);
+      border-color: #ffbe0b;
+      color: #fff;
+    }
+    .getup-btn {
+      pointer-events: auto;
+      position: absolute;
+      top: 58px;
+      right: 10px;
+      background: linear-gradient(135deg, #06d6a0, #118ab2);
+      color: #fff;
+      border: 3px solid #ffd166;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 900;
+      font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      animation: getup-pulse 0.9s ease-in-out infinite;
+      z-index: 6;
+    }
+    .getup-btn[hidden] { display: none !important; }
+    @keyframes getup-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .mode-btns { gap: 8px; }
+    .mode-btn { min-width: 120px; min-height: 48px; padding: 10px 12px; font-size: clamp(0.85rem, 2.1vw, 1.05rem); }
+    @media (max-width: 700px) {
+      .dpad { width: 150px; height: 150px; bottom: 96px; }
+      .mode-btns { bottom: 96px; }
+      .mode-btn { min-width: 108px; min-height: 46px; }
+      .phonics-hint { max-width: 55%; }
+      .getup-btn { top: 54px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="control-bar">
+    <div class="control-group">
+      <label class="file-btn">
+        🎵 Load "V sound.mp3"
+        <input type="file" id="audioInput" accept="audio/*" />
+      </label>
+      <button class="btn" id="playBtn">▶ Play</button>
+      <button class="btn secondary" id="restartBtn">⏮ Restart</button>
+      <span class="status-pill" id="fileStatus">SRT Synced Mode (Load MP3 for audio)</span>
+    </div>
+
+    <div class="scrubber-wrap">
+      <input type="range" id="scrubber" min="0" max="50" step="0.01" value="0" />
+      <div class="time-readout" id="timeReadout">00.00s / 50.00s</div>
+    </div>
+
+    <div class="offset-box" title="Optional fine-tune nudge in seconds (0.00 = exact SRT timestamps)">
+      <label for="syncNudge">Sync Nudge (s):</label>
+      <input type="number" id="syncNudge" step="0.05" min="-5" max="5" value="0.00" />
+    </div>
+  </div>
+
+  <div class="stage-container">
+    <canvas id="stage" width="1280" height="720"></canvas>
+    <div class="phonics-hud" id="phonicsHud">
+      <div class="phonics-hint" id="phonicsHint">Arrows / WASD move · 1 Dance · 2 Cheer · 3 Scared · 4 Wild · or tap Control me</div>
+      <button type="button" class="control-me-btn" id="controlMeBtn" aria-pressed="false">🎮 Control me</button>
+      <button type="button" class="getup-btn" id="getUpBtn" hidden>🆙 Get up!</button>
+      <div class="dpad" id="dpad" aria-label="Move Phonics Man">
+        <button type="button" class="dpad-btn dpad-up" data-dir="up" aria-label="Up">▲</button>
+        <button type="button" class="dpad-btn dpad-left" data-dir="left" aria-label="Left">◀</button>
+        <button type="button" class="dpad-btn dpad-right" data-dir="right" aria-label="Right">▶</button>
+        <button type="button" class="dpad-btn dpad-down" data-dir="down" aria-label="Down">▼</button>
+      </div>
+      <div class="mode-btns" id="modeBtns">
+        <button type="button" class="mode-btn active" data-mode="dance">💃 Dance</button>
+        <button type="button" class="mode-btn" data-mode="cheer">🎉 Cheer</button>
+        <button type="button" class="mode-btn" data-mode="scared">😱 Scared</button>
+        <button type="button" class="mode-btn" data-mode="wild">🤪 Wild</button>
+      </div>
+    </div>
+    <div class="lyric-banner" id="lyricBanner">
+      <div class="lyric-line" id="lyricText">🎵 Get Ready for the <b class="v-word">"V"</b> Sound! 🎵</div>
+      <div class="lyric-sub" id="lyricSub">Instrumental Intro (0:00 - 0:09.42)</div>
+    </div>
+  </div>
+
+  <audio id="audioPlayer" preload="auto"></audio>
+
+  <script>
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+
+    const audioInput = document.getElementById('audioInput');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const scrubber = document.getElementById('scrubber');
+    const timeReadout = document.getElementById('timeReadout');
+    const fileStatus = document.getElementById('fileStatus');
+    const lyricText = document.getElementById('lyricText');
+    const lyricSub = document.getElementById('lyricSub');
+    const syncNudgeInput = document.getElementById('syncNudge');
+
+    let hasAudio = false;
+    let isPlaying = false;
+    let simTime = 0;
+    let totalDuration = 50.0;
+    let lastFrameTime = performance.now();
+
+    // Particles for Cobra Man's angry stomps & Violin musical notes
+    const stompPuffs = [];
+    const floatingNotes = [];
+    let lastCobraStepSide = 0;
+
+
+    // ============================================================================
+    // PHONICS MAN PLAYER CONTROLS (keyboard + touch / iPad)
+    // Depth = y (higher y = closer / drawn in front). Stay grounded on the hill.
+    // ============================================================================
+    const PHONICS_X_MIN = 90;
+    const PHONICS_X_MAX = 1190;
+    // Grounded hill/stage band — no sky-flying (old min 250 looked airborne)
+    const PHONICS_Y_MIN = 380;
+    const PHONICS_Y_MAX = 555;
+    const PHONICS_MODES = ['dance', 'cheer', 'scared', 'wild'];
+
+    const phonicsPlayer = {
+      active: false,
+      x: 430,
+      y: 445,
+      baseScale: 1.05,
+      scale: 1.05,
+      mode: 'dance',
+      speed: 340,
+      keys: { up: false, down: false, left: false, right: false },
+      dragging: false,
+      ragdoll: false,
+      ragdollAge: 0,
+      recovering: false,
+      recoverAge: 0,
+      hitCooldown: 0,
+      flopAngle: 0,
+      flopSpin: 0
+    };
+
+    // Live Cobra Man pose for hit tests (updated each frame)
+    const cobraState = { x: 640, y: 335, scale: 0.72 };
+
+    const controlMeBtn = document.getElementById('controlMeBtn');
+    const getUpBtn = document.getElementById('getUpBtn');
+    const phonicsHint = document.getElementById('phonicsHint');
+    const modeBtns = Array.from(document.querySelectorAll('.mode-btn'));
+    const dpadBtns = Array.from(document.querySelectorAll('.dpad-btn'));
+
+    function setModeButtons(mode) {
+      modeBtns.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+    }
+
+    function phonicsHintIdle() {
+      return 'Arrows / WASD move · 1 Dance · 2 Cheer · 3 Scared · 4 Wild · or tap Control me';
+    }
+    function phonicsHintActive() {
+      return 'You control Phonics Man · Arrows/WASD · 1–4 modes · drag him · watch out for Cobra Man!';
+    }
+    function phonicsHintRagdoll() {
+      return '😵 Bonked by Cobra Man! Tap Get up, press Space / G, or wait a moment…';
+    }
+
+    function setGetUpVisible(show) {
+      if (show) getUpBtn.removeAttribute('hidden');
+      else getUpBtn.setAttribute('hidden', '');
+    }
+
+    function activatePhonicsControl(reason) {
+      if (!phonicsPlayer.active) {
+        phonicsPlayer.active = true;
+        controlMeBtn.classList.add('on');
+        controlMeBtn.setAttribute('aria-pressed', 'true');
+        controlMeBtn.textContent = '🎮 Controlling!';
+        phonicsHint.textContent = phonicsPlayer.ragdoll ? phonicsHintRagdoll() : phonicsHintActive();
+      }
+      if (reason === 'toggle-off') {
+        phonicsPlayer.active = false;
+        controlMeBtn.classList.remove('on');
+        controlMeBtn.setAttribute('aria-pressed', 'false');
+        controlMeBtn.textContent = '🎮 Control me';
+        phonicsHint.textContent = phonicsHintIdle();
+        phonicsPlayer.keys.up = phonicsPlayer.keys.down = phonicsPlayer.keys.left = phonicsPlayer.keys.right = false;
+        dpadBtns.forEach((b) => b.classList.remove('held'));
+        phonicsPlayer.ragdoll = false;
+        phonicsPlayer.recovering = false;
+        phonicsPlayer.ragdollAge = 0;
+        phonicsPlayer.recoverAge = 0;
+        setGetUpVisible(false);
+      }
+    }
+
+    function setPhonicsMode(mode) {
+      if (!PHONICS_MODES.includes(mode)) return;
+      if (phonicsPlayer.ragdoll || phonicsPlayer.recovering) return;
+      phonicsPlayer.mode = mode;
+      setModeButtons(mode);
+      activatePhonicsControl('mode');
+    }
+
+    function startRagdoll() {
+      if (phonicsPlayer.ragdoll || phonicsPlayer.recovering) return;
+      phonicsPlayer.ragdoll = true;
+      phonicsPlayer.ragdollAge = 0;
+      phonicsPlayer.recovering = false;
+      phonicsPlayer.recoverAge = 0;
+      phonicsPlayer.flopSpin = (Math.random() < 0.5 ? -1 : 1) * (2.2 + Math.random() * 1.4);
+      phonicsPlayer.flopAngle = 0;
+      phonicsPlayer.keys.up = phonicsPlayer.keys.down = phonicsPlayer.keys.left = phonicsPlayer.keys.right = false;
+      dpadBtns.forEach((b) => b.classList.remove('held'));
+      phonicsPlayer.dragging = false;
+      activatePhonicsControl('ragdoll');
+      phonicsHint.textContent = phonicsHintRagdoll();
+      setGetUpVisible(true);
+    }
+
+    function beginGetUp() {
+      if (!phonicsPlayer.ragdoll) return;
+      phonicsPlayer.ragdoll = false;
+      phonicsPlayer.recovering = true;
+      phonicsPlayer.recoverAge = 0;
+      setGetUpVisible(false);
+      phonicsHint.textContent = 'Getting up…';
+    }
+
+    function finishGetUp() {
+      phonicsPlayer.recovering = false;
+      phonicsPlayer.recoverAge = 0;
+      phonicsPlayer.flopAngle = 0;
+      phonicsPlayer.hitCooldown = 1.25;
+      phonicsHint.textContent = phonicsHintActive();
+      setModeButtons(phonicsPlayer.mode);
+    }
+
+    controlMeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (phonicsPlayer.active) activatePhonicsControl('toggle-off');
+      else activatePhonicsControl('toggle');
+    });
+
+    getUpBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      beginGetUp();
+    });
+    getUpBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      beginGetUp();
+    });
+
+    modeBtns.forEach((btn) => {
+      const onMode = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setPhonicsMode(btn.dataset.mode);
+      };
+      btn.addEventListener('pointerdown', onMode);
+      btn.addEventListener('click', onMode);
+    });
+
+    function setDir(dir, pressed) {
+      if (!dir || !(dir in phonicsPlayer.keys)) return;
+      if (phonicsPlayer.ragdoll || phonicsPlayer.recovering) {
+        phonicsPlayer.keys[dir] = false;
+        return;
+      }
+      phonicsPlayer.keys[dir] = pressed;
+      if (pressed) activatePhonicsControl('move');
+    }
+
+    dpadBtns.forEach((btn) => {
+      const dir = btn.dataset.dir;
+      const press = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+        btn.classList.add('held');
+        setDir(dir, true);
+      };
+      const release = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        btn.classList.remove('held');
+        setDir(dir, false);
+      };
+      btn.addEventListener('pointerdown', press);
+      btn.addEventListener('pointerup', release);
+      btn.addEventListener('pointercancel', release);
+      btn.addEventListener('lostpointercapture', () => {
+        btn.classList.remove('held');
+        setDir(dir, false);
+      });
+    });
+
+    const keyDirMap = {
+      ArrowUp: 'up', KeyW: 'up',
+      ArrowDown: 'down', KeyS: 'down',
+      ArrowLeft: 'left', KeyA: 'left',
+      ArrowRight: 'right', KeyD: 'right'
+    };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      if ((e.code === 'Space' || e.code === 'KeyG') && phonicsPlayer.ragdoll) {
+        e.preventDefault();
+        beginGetUp();
+        return;
+      }
+      const dir = keyDirMap[e.code];
+      if (dir) {
+        e.preventDefault();
+        if (!e.repeat) setDir(dir, true);
+        return;
+      }
+      if (e.code === 'Digit1' || e.code === 'Numpad1') {
+        e.preventDefault();
+        setPhonicsMode('dance');
+      } else if (e.code === 'Digit2' || e.code === 'Numpad2') {
+        e.preventDefault();
+        setPhonicsMode('cheer');
+      } else if (e.code === 'Digit3' || e.code === 'Numpad3') {
+        e.preventDefault();
+        setPhonicsMode('scared');
+      } else if (e.code === 'Digit4' || e.code === 'Numpad4') {
+        e.preventDefault();
+        setPhonicsMode('wild');
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      const dir = keyDirMap[e.code];
+      if (dir) {
+        e.preventDefault();
+        setDir(dir, false);
+      }
+    });
+
+    function canvasPointFromEvent(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left) * (canvas.width / rect.width),
+        y: (e.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function depthFactorFromY(y) {
+      const t = Math.max(0, Math.min(1, (y - PHONICS_Y_MIN) / (PHONICS_Y_MAX - PHONICS_Y_MIN)));
+      // Farther back (low y) = smaller; foreground (high y) = a bit larger
+      return 0.82 + t * 0.28;
+    }
+
+    function applyPhonicsDepthScale() {
+      phonicsPlayer.scale = (phonicsPlayer.baseScale || 1) * depthFactorFromY(phonicsPlayer.y);
+    }
+
+    function clampPhonicsPos() {
+      phonicsPlayer.x = Math.max(PHONICS_X_MIN, Math.min(PHONICS_X_MAX, phonicsPlayer.x));
+      phonicsPlayer.y = Math.max(PHONICS_Y_MIN, Math.min(PHONICS_Y_MAX, phonicsPlayer.y));
+      applyPhonicsDepthScale();
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!phonicsPlayer.active) return;
+      if (phonicsPlayer.ragdoll) {
+        const p = canvasPointFromEvent(e);
+        const dx = p.x - phonicsPlayer.x;
+        const dy = p.y - phonicsPlayer.y;
+        if (dx * dx + dy * dy < 160 * 160) {
+          beginGetUp();
+          e.preventDefault();
+        }
+        return;
+      }
+      if (phonicsPlayer.recovering) return;
+      const p = canvasPointFromEvent(e);
+      const dx = p.x - phonicsPlayer.x;
+      const dy = p.y - phonicsPlayer.y;
+      if (dx * dx + dy * dy < 140 * 140) {
+        phonicsPlayer.dragging = true;
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+        e.preventDefault();
+      }
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      if (!phonicsPlayer.dragging) return;
+      const p = canvasPointFromEvent(e);
+      phonicsPlayer.x = p.x;
+      phonicsPlayer.y = p.y;
+      clampPhonicsPos();
+      e.preventDefault();
+    });
+
+    const endDrag = (e) => {
+      if (!phonicsPlayer.dragging) return;
+      phonicsPlayer.dragging = false;
+      e.preventDefault();
+    };
+    canvas.addEventListener('pointerup', endDrag);
+    canvas.addEventListener('pointercancel', endDrag);
+
+    function checkCobraBonk() {
+      if (!phonicsPlayer.active || phonicsPlayer.ragdoll || phonicsPlayer.recovering) return;
+      if (phonicsPlayer.hitCooldown > 0) return;
+      const dx = phonicsPlayer.x - cobraState.x;
+      const dy = phonicsPlayer.y - cobraState.y;
+      const hitRx = 78 * cobraState.scale + 55 * (phonicsPlayer.scale || 1);
+      const hitRy = 62 * cobraState.scale + 48 * (phonicsPlayer.scale || 1);
+      const nx = dx / hitRx;
+      const ny = dy / hitRy;
+      if (nx * nx + ny * ny < 1) {
+        startRagdoll();
+      }
+    }
+
+    function updatePhonicsPlayer(dt) {
+      if (phonicsPlayer.hitCooldown > 0) {
+        phonicsPlayer.hitCooldown = Math.max(0, phonicsPlayer.hitCooldown - dt);
+      }
+
+      if (phonicsPlayer.ragdoll) {
+        phonicsPlayer.ragdollAge += dt;
+        const settle = Math.min(1, phonicsPlayer.ragdollAge / 0.55);
+        phonicsPlayer.flopAngle = phonicsPlayer.flopSpin * settle + Math.sin(phonicsPlayer.ragdollAge * 10) * 0.18 * (1 - settle * 0.7);
+        if (phonicsPlayer.ragdollAge >= 2.4) beginGetUp();
+        return;
+      }
+
+      if (phonicsPlayer.recovering) {
+        phonicsPlayer.recoverAge += dt;
+        const u = Math.min(1, phonicsPlayer.recoverAge / 0.55);
+        phonicsPlayer.flopAngle *= (1 - u);
+        if (phonicsPlayer.recoverAge >= 0.55) finishGetUp();
+        return;
+      }
+
+      if (!phonicsPlayer.active || phonicsPlayer.dragging) {
+        checkCobraBonk();
+        return;
+      }
+      let mx = 0, my = 0;
+      if (phonicsPlayer.keys.left) mx -= 1;
+      if (phonicsPlayer.keys.right) mx += 1;
+      if (phonicsPlayer.keys.up) my -= 1;
+      if (phonicsPlayer.keys.down) my += 1;
+      if (mx || my) {
+        const len = Math.hypot(mx, my) || 1;
+        phonicsPlayer.x += (mx / len) * phonicsPlayer.speed * dt;
+        phonicsPlayer.y += (my / len) * phonicsPlayer.speed * dt;
+        clampPhonicsPos();
+      }
+      checkCobraBonk();
+    }
+
+    function drawControlledOrScenePhonics(ctx, defaultX, defaultY, scale, t, sceneMode) {
+      if (!phonicsPlayer.active) {
+        phonicsPlayer.x = defaultX;
+        phonicsPlayer.y = defaultY;
+        phonicsPlayer.baseScale = scale;
+        phonicsPlayer.scale = scale;
+        if (PHONICS_MODES.includes(sceneMode) && phonicsPlayer.mode !== sceneMode) {
+          phonicsPlayer.mode = sceneMode;
+          setModeButtons(sceneMode);
+        }
+        drawPhonicsMan(ctx, defaultX, defaultY, scale, t, sceneMode);
+      } else {
+        applyPhonicsDepthScale();
+        const drawMode = phonicsPlayer.ragdoll ? 'ragdoll' : (phonicsPlayer.recovering ? 'recover' : phonicsPlayer.mode);
+        drawPhonicsMan(ctx, phonicsPlayer.x, phonicsPlayer.y, phonicsPlayer.scale || scale, t, drawMode);
+      }
+    }
+
+    /** Sortable ground actors: higher y draws later (in front). */
+    function drawActorsByDepth(actors) {
+      actors
+        .slice()
+        .sort((a, b) => a.y - b.y || (a.tie || 0) - (b.tie || 0))
+        .forEach((a) => a.draw());
+    }
+
+
+    // ============================================================================
+    // EXACT SRT TIMECODES (FROM V_sound_lyrics.srt)
+    // ============================================================================
+    const SRT_TIMELINE = [
+      // Intro before first SRT subtitle (00:00:00,000 --> 00:00:09,420)
+      {
+        start: 0.000, end: 9.420,
+        html: '🎵 Get Ready for the <b class="v-word">"V"</b> Sound! 🎵',
+        sub: 'Instrumental Intro • Phonics Man & The V Monster warming up!',
+        scene: 'intro'
+      },
+      // 1: 00:00:09,420 --> 00:00:11,040 (bridged to 11.370)
+      {
+        start: 9.420, end: 11.370,
+        html: '<b class="v-word">V, V, V!</b>',
+        sub: 'Line 1 • Phonics Man & The V Monster!',
+        scene: 'v_intro'
+      },
+      // 2: 00:00:11,370 --> 00:00:13,290 (bridged to 13.440)
+      {
+        start: 11.370, end: 13.440,
+        html: 'It\'s in <b class="v-word">very</b> important words.',
+        sub: 'Line 2 • Phonics Man & The V Monster',
+        scene: 'v_intro'
+      },
+      // 3: 00:00:13,440 --> 00:00:15,570
+      {
+        start: 13.440, end: 15.570,
+        html: 'It has the "<b class="v-word">V</b>" sound.',
+        sub: 'Line 3 • Feel that "V" sound!',
+        scene: 'v_intro'
+      },
+      // 4: 00:00:15,570 --> 00:00:17,700 (bridged to 17.850)
+      {
+        start: 15.570, end: 17.850,
+        html: 'The sound you just heard!',
+        sub: 'Line 4 • Phonics Man & The V Monster',
+        scene: 'v_intro'
+      },
+      // 5: 00:00:17,850 --> 00:00:19,200
+      {
+        start: 17.850, end: 19.200,
+        html: '<b class="v-word">V-v-violin!</b>',
+        sub: 'Line 5 • Enter Violin Man!',
+        scene: 'violin'
+      },
+      // 6: 00:00:19,200 --> 00:00:21,500 (bridged to 21.700)
+      {
+        start: 19.200, end: 21.700,
+        html: 'We love the <b class="v-word">violin!</b>',
+        sub: 'Line 6 • Violin Man plays a sweet melody!',
+        scene: 'violin'
+      },
+      // 7: 00:00:21,700 --> 00:00:22,140
+      {
+        start: 21.700, end: 22.140,
+        html: '<b class="v-word">V-v-Viking!</b>',
+        sub: 'Line 7 • Enter the mighty Viking!',
+        scene: 'viking'
+      },
+      // 8: 00:00:22,140 --> 00:00:25,900 (bridged to 26.340)
+      {
+        start: 22.140, end: 26.340,
+        html: 'He\'s scary, don\'t look at him!',
+        sub: 'Line 8 • Phonics Man & V Monster cover their eyes!',
+        scene: 'viking_scary'
+      },
+      // 9: 00:00:26,340 --> 00:00:27,720
+      {
+        start: 26.340, end: 27.720,
+        html: '<b class="v-word">V-V-Vegetable.</b>',
+        sub: 'Line 9 • Super Choy-sum Man arrives!',
+        scene: 'vegetable'
+      },
+      // 10: 00:00:27,720 --> 00:00:29,800
+      {
+        start: 27.720, end: 29.800,
+        html: 'They\'re good for you!',
+        sub: 'Line 10 • Choy-sum Man powers up!',
+        scene: 'vegetable'
+      },
+      // 11: 00:00:29,800 --> 00:00:32,800
+      {
+        start: 29.800, end: 32.800,
+        html: 'Now you know the "<b class="v-word">v</b>" sound!',
+        sub: 'Line 11 • Everyone dances together!',
+        scene: 'finale'
+      },
+      // 12: 00:00:32,800 --> 00:00:35,340
+      {
+        start: 32.800, end: 35.340,
+        html: 'So don\'t feel blue!',
+        sub: 'Line 12 • Big superhero finish!',
+        scene: 'finale'
+      },
+      // Outro after 00:00:35,340 --> 00:00:50,000
+      {
+        start: 35.340, end: 60.000,
+        html: '🎉 <b class="v-word">V-V-Violin</b> • <b class="v-word">V-V-Viking</b> • <b class="v-word">V-V-Vegetable!</b> 🎉',
+        sub: 'Instrumental Outro (35.34s - 50.00s) • Great job!',
+        scene: 'outro'
+      }
+    ];
+
+    // Audio & Controls Setup
+    audioInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      audioPlayer.src = url;
+      hasAudio = true;
+      fileStatus.textContent = `Loaded: ${file.name} (SRT Synced)`;
+      audioPlayer.addEventListener('loadedmetadata', () => {
+        if (audioPlayer.duration && !isNaN(audioPlayer.duration)) {
+          totalDuration = audioPlayer.duration;
+          scrubber.max = totalDuration.toFixed(2);
+        }
+      }, { once: true });
+    });
+
+    playBtn.addEventListener('click', () => {
+      if (hasAudio) {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
+          isPlaying = true;
+          playBtn.textContent = '⏸ Pause';
+        } else {
+          audioPlayer.pause();
+          isPlaying = false;
+          playBtn.textContent = '▶ Play';
+        }
+      } else {
+        isPlaying = !isPlaying;
+        playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      }
+    });
+
+    restartBtn.addEventListener('click', () => {
+      if (hasAudio) {
+        audioPlayer.currentTime = 0;
+        audioPlayer.play();
+        isPlaying = true;
+        playBtn.textContent = '⏸ Pause';
+      } else {
+        simTime = 0;
+        isPlaying = true;
+        playBtn.textContent = '⏸ Pause';
+      }
+    });
+
+    scrubber.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      if (hasAudio) {
+        audioPlayer.currentTime = val;
+      } else {
+        simTime = val;
+      }
+    });
+
+    audioPlayer.addEventListener('ended', () => {
+      isPlaying = false;
+      playBtn.textContent = '▶ Play';
+    });
+
+    function getCurrentStep(t) {
+      const nudge = parseFloat(syncNudgeInput.value) || 0.0;
+      const adjustedTime = Math.max(0, t - nudge);
+      for (let i = 0; i < SRT_TIMELINE.length; i++) {
+        const item = SRT_TIMELINE[i];
+        if (adjustedTime >= item.start && adjustedTime < item.end) {
+          return item;
+        }
+      }
+      return SRT_TIMELINE[SRT_TIMELINE.length - 1];
+    }
+
+    // ============================================================================
+    // CHARACTER DRAWING FUNCTIONS (MATCHING REFERENCE IMAGES)
+    // ============================================================================
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // 1. COBRA MAN (Villain in background: black faceted cobra hood, purple eyes, scar, dark armor, purple cape, angry stomp)
+    function drawCobraMan(ctx, x, y, scale, t) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      const stompSpeed = 9.5;
+      const stride = Math.sin(t * stompSpeed);
+      const leftLegLift = Math.max(0, stride) * 22;
+      const rightLegLift = Math.max(0, -stride) * 22;
+      const bodyBob = Math.abs(Math.cos(t * stompSpeed)) * 8;
+      const bodyTilt = stride * 0.08;
+
+      if (stride > 0.92 && lastCobraStepSide !== 1) {
+        lastCobraStepSide = 1;
+        stompPuffs.push({ x: x + 28 * scale, y: y + 95 * scale, r: 6, alpha: 0.9, vx: 25, vy: -15 });
+      } else if (stride < -0.92 && lastCobraStepSide !== -1) {
+        lastCobraStepSide = -1;
+        stompPuffs.push({ x: x - 28 * scale, y: y + 95 * scale, r: 6, alpha: 0.9, vx: -25, vy: -15 });
+      }
+
+      // Ground shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.beginPath();
+      ctx.ellipse(0, 98, 55, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.translate(0, -bodyBob);
+      ctx.rotate(bodyTilt);
+
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#111';
+
+      // Purple Cape with wavy serpent pattern
+      ctx.fillStyle = '#4a156b';
+      ctx.beginPath();
+      ctx.moveTo(-38, -15);
+      ctx.lineTo(-68 - Math.sin(t * 6) * 6, 85);
+      ctx.quadraticCurveTo(0, 95, 68 + Math.cos(t * 6) * 6, 85);
+      ctx.lineTo(38, -15);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Purple serpent motif on cape
+      ctx.strokeStyle = '#8e2de2';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(0, -5);
+      ctx.bezierCurveTo(-30, 20, 30, 45, -10, 78);
+      ctx.stroke();
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 4;
+
+      // Purple glowing staff strapped/held
+      ctx.save();
+      ctx.translate(42, 10 - rightLegLift * 0.4);
+      ctx.rotate(0.45 + Math.sin(t * stompSpeed) * 0.25);
+      ctx.fillStyle = '#2b2b36';
+      roundRect(ctx, -6, -75, 12, 140, 4);
+      ctx.fillStyle = '#a855f7';
+      ctx.fillRect(-4, -55, 8, 22);
+      ctx.fillRect(-4, 25, 8, 22);
+      ctx.restore();
+
+      // Left Leg
+      ctx.save();
+      ctx.translate(-22, 42 - leftLegLift);
+      ctx.fillStyle = '#26262e';
+      roundRect(ctx, -14, 0, 28, 42, 6);
+      ctx.fillStyle = '#3f3f4e';
+      roundRect(ctx, -12, 6, 24, 14, 4);
+      ctx.fillStyle = '#1c1c24';
+      roundRect(ctx, -18, 34, 34, 20, 8);
+      ctx.restore();
+
+      // Right Leg
+      ctx.save();
+      ctx.translate(22, 42 - rightLegLift);
+      ctx.fillStyle = '#26262e';
+      roundRect(ctx, -14, 0, 28, 42, 6);
+      ctx.fillStyle = '#3f3f4e';
+      roundRect(ctx, -12, 6, 24, 14, 4);
+      ctx.fillStyle = '#1c1c24';
+      roundRect(ctx, -16, 34, 34, 20, 8);
+      ctx.restore();
+
+      // Armored Torso
+      ctx.fillStyle = '#22222b';
+      roundRect(ctx, -34, -18, 68, 65, 12);
+      ctx.fillStyle = '#3d3d4d';
+      ctx.beginPath();
+      ctx.moveTo(-26, -10);
+      ctx.lineTo(0, -2);
+      ctx.lineTo(26, -10);
+      ctx.lineTo(20, 22);
+      ctx.lineTo(0, 30);
+      ctx.lineTo(-20, 22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Utility Belt
+      ctx.fillStyle = '#1a1a22';
+      roundRect(ctx, -36, 32, 72, 14, 4);
+      ctx.fillStyle = '#4e4e61';
+      roundRect(ctx, -10, 30, 20, 18, 3);
+
+      // Left Arm
+      ctx.save();
+      ctx.translate(-40, -6 + rightLegLift * 0.5);
+      ctx.rotate(0.35 + stride * 0.35);
+      ctx.fillStyle = '#2e2e3a';
+      roundRect(ctx, -12, 0, 24, 44, 8);
+      ctx.fillStyle = '#15151c';
+      ctx.beginPath();
+      ctx.arc(0, 46, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Right Arm
+      ctx.save();
+      ctx.translate(40, -6 + leftLegLift * 0.5);
+      ctx.rotate(-0.35 - stride * 0.35);
+      ctx.fillStyle = '#2e2e3a';
+      roundRect(ctx, -12, 0, 24, 44, 8);
+      ctx.fillStyle = '#15151c';
+      ctx.beginPath();
+      ctx.arc(0, 46, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Geometric Faceted Black Cobra Hood Helmet
+      ctx.save();
+      ctx.translate(0, -68);
+
+      ctx.fillStyle = '#25252e';
+      ctx.beginPath();
+      ctx.moveTo(-45, 52);
+      ctx.lineTo(-82, -8);
+      ctx.lineTo(-55, -52);
+      ctx.lineTo(0, -60);
+      ctx.lineTo(55, -52);
+      ctx.lineTo(82, -8);
+      ctx.lineTo(45, 52);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#383846';
+      ctx.beginPath();
+      ctx.moveTo(-55, -52);
+      ctx.lineTo(0, -60);
+      ctx.lineTo(0, -18);
+      ctx.lineTo(-42, -22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#1d1d24';
+      ctx.beginPath();
+      ctx.moveTo(55, -52);
+      ctx.lineTo(0, -60);
+      ctx.lineTo(0, -18);
+      ctx.lineTo(42, -22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Glowing Purple Cobra Hood Eyes
+      ctx.fillStyle = '#a855f7';
+      ctx.shadowColor = '#d8b4fe';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.ellipse(-34, -30, 16, 9, 0.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(34, -30, 16, 9, -0.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Face Opening inside Cobra Hood
+      ctx.fillStyle = '#f3b67f';
+      ctx.beginPath();
+      ctx.arc(0, 16, 36, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Center V-brow helmet nose guard
+      ctx.fillStyle = '#2f2f3b';
+      ctx.beginPath();
+      ctx.moveTo(-38, -12);
+      ctx.lineTo(0, 12);
+      ctx.lineTo(38, -12);
+      ctx.lineTo(30, -24);
+      ctx.lineTo(0, -8);
+      ctx.lineTo(-30, -24);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Facial Scar
+      ctx.strokeStyle = '#b5654d';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-24, 2);
+      ctx.lineTo(-16, 20);
+      ctx.stroke();
+
+      // Eyes & Angry Scowling Eyebrows
+      ctx.fillStyle = '#111';
+      ctx.beginPath();
+      ctx.arc(-16, 16, 5.5, 0, Math.PI * 2);
+      ctx.arc(16, 16, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(-18, 14, 2, 0, Math.PI * 2);
+      ctx.arc(14, 14, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-27, 6);
+      ctx.lineTo(-8, 13);
+      ctx.moveTo(27, 6);
+      ctx.lineTo(8, 13);
+      ctx.stroke();
+
+      // Angry Gritted Mouth
+      ctx.lineWidth = 3.5;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(0, 36, 11, Math.PI, 0, false);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.restore();
+      ctx.restore();
+    }
+
+    // 2. PHONICS MAN (Bald head, purple glasses, purple cape, yellow shirt with red circle & 'P', blue track pants)
+    function drawPhonicsMan(ctx, x, y, scale, t, mode = 'dance') {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      const isRagdoll = mode === 'ragdoll';
+      const isRecover = mode === 'recover';
+      const isWild = mode === 'wild';
+
+      let beat = Math.sin(t * 9);
+      let bounce = Math.abs(beat) * 14;
+      let sway = Math.sin(t * 4.5) * 0.07;
+
+      if (isWild) {
+        beat = Math.sin(t * 18);
+        bounce = Math.abs(Math.sin(t * 14)) * 28 + Math.abs(Math.sin(t * 23)) * 10;
+        sway = Math.sin(t * 11) * 0.22 + Math.sin(t * 17) * 0.12;
+      }
+      if (isRagdoll) {
+        bounce = Math.abs(Math.sin(t * 16)) * 6;
+        sway = 0;
+      }
+      if (isRecover) {
+        bounce = Math.abs(Math.sin(t * 12)) * 8;
+        sway = Math.sin(t * 6) * 0.04;
+      }
+
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(0, 115, isRagdoll ? 70 : 58, isRagdoll ? 10 : 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cartoon flop / get-up tilt (kid-friendly, no gore)
+      if (isRagdoll || isRecover) {
+        ctx.rotate(phonicsPlayer.flopAngle || (isRagdoll ? 1.35 : 0));
+        ctx.translate(isRagdoll ? 20 : 0, isRagdoll ? 35 : 0);
+      }
+
+      ctx.translate(0, -bounce);
+      ctx.rotate(sway);
+      if (isWild) {
+        ctx.rotate(Math.sin(t * 13) * 0.35);
+      }
+
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#111';
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Purple Superhero Cape
+      const capeWiggle = isWild ? Math.sin(t * 16) * 18 : Math.sin(t * 7) * 8;
+      ctx.fillStyle = '#6a2c91';
+      ctx.beginPath();
+      ctx.moveTo(-40, -32);
+      ctx.lineTo(-76 - capeWiggle, 92);
+      ctx.quadraticCurveTo(0, 104 + (isWild ? Math.sin(t * 12) * 10 : 0), 76 + Math.cos(t * (isWild ? 15 : 7)) * (isWild ? 18 : 8), 92);
+      ctx.lineTo(40, -32);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Legs
+      const legKick = isWild ? beat * 0.55 : (isRagdoll ? Math.sin(t * 14) * 0.9 : beat * 0.08);
+      ctx.save();
+      ctx.translate(-24, 38);
+      ctx.rotate(legKick);
+      if (isRagdoll) ctx.rotate(0.6 + Math.sin(t * 9) * 0.4);
+      ctx.fillStyle = '#0077df';
+      roundRect(ctx, -18, 0, 34, 58, 8);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(-14, 2, 6, 54);
+      ctx.fillStyle = '#fff';
+      roundRect(ctx, -26, 52, 44, 22, 10);
+      ctx.fillStyle = '#0077df';
+      ctx.fillRect(-10, 54, 6, 16);
+      ctx.fillRect(0, 54, 6, 16);
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(24, 38);
+      ctx.rotate(-legKick);
+      if (isRagdoll) ctx.rotate(-0.5 + Math.cos(t * 11) * 0.5);
+      ctx.fillStyle = '#0077df';
+      roundRect(ctx, -16, 0, 34, 58, 8);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(8, 2, 6, 54);
+      ctx.fillStyle = '#fff';
+      roundRect(ctx, -18, 52, 44, 22, 10);
+      ctx.fillStyle = '#0077df';
+      ctx.fillRect(-6, 54, 6, 16);
+      ctx.fillRect(4, 54, 6, 16);
+      ctx.restore();
+
+      // Yellow T-Shirt Torso
+      ctx.fillStyle = '#ffdd33';
+      roundRect(ctx, -44, -32, 88, 76, 14);
+
+      // Red Circle with Yellow 'P' on Chest
+      ctx.fillStyle = '#d62828';
+      ctx.beginPath();
+      ctx.arc(0, 6, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffdd33';
+      ctx.font = '900 36px "Segoe UI", Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('P', 0, 8);
+      ctx.strokeText('P', 0, 8);
+
+      // Arms
+      let leftArmAngle, rightArmAngle;
+      if (isRagdoll) {
+        leftArmAngle = -2.4 + Math.sin(t * 13) * 0.8;
+        rightArmAngle = 2.5 + Math.cos(t * 12) * 0.8;
+      } else if (isWild) {
+        leftArmAngle = -0.2 + Math.sin(t * 16) * 1.4;
+        rightArmAngle = 0.2 + Math.cos(t * 15) * 1.4;
+      } else if (mode === 'scared') {
+        leftArmAngle = -2.1;
+        rightArmAngle = 2.1;
+      } else if (mode === 'cheer') {
+        leftArmAngle = -0.9 + beat * 0.4;
+        rightArmAngle = 0.9 - beat * 0.4;
+      } else {
+        leftArmAngle = -0.35 + beat * 0.45;
+        rightArmAngle = 0.35 - beat * 0.45;
+      }
+
+      ctx.save();
+      ctx.translate(-44, -20);
+      ctx.rotate(leftArmAngle);
+      ctx.fillStyle = '#ffdd33';
+      roundRect(ctx, -28, -12, 28, 26, 6);
+      ctx.fillStyle = '#7b2cbf';
+      roundRect(ctx, -64, -13, 38, 28, 10);
+      ctx.beginPath();
+      ctx.arc(-68, 0, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(44, -20);
+      ctx.rotate(rightArmAngle);
+      ctx.fillStyle = '#ffdd33';
+      roundRect(ctx, 0, -12, 28, 26, 6);
+      ctx.fillStyle = '#7b2cbf';
+      roundRect(ctx, 26, -13, 38, 28, 10);
+      ctx.beginPath();
+      ctx.arc(68, 0, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Neck / Cape Clasp
+      ctx.fillStyle = '#6a2c91';
+      ctx.beginPath();
+      ctx.ellipse(0, -32, 34, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Head
+      ctx.save();
+      ctx.translate(0, -82);
+      const headBob = isWild ? Math.sin(t * 14) * 0.25 : Math.sin(t * 4.5) * 0.05;
+      ctx.rotate(headBob);
+      if (isRagdoll) ctx.rotate(Math.sin(t * 8) * 0.35);
+
+      ctx.fillStyle = '#ffcaa6';
+      ctx.beginPath();
+      ctx.arc(-50, 8, 12, 0, Math.PI * 2);
+      ctx.arc(50, 8, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffcaa6';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 50, 46, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Brown Side Hair
+      ctx.fillStyle = '#6f452b';
+      ctx.beginPath();
+      ctx.ellipse(-46, -4, 7, 16, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(46, -4, 7, 16, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Forehead lines
+      ctx.strokeStyle = '#d99b72';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, -20, 18, -2.1, -1.05);
+      ctx.stroke();
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#111';
+
+      // Rosy cheeks
+      ctx.fillStyle = 'rgba(255, 130, 130, 0.55)';
+      ctx.beginPath();
+      ctx.ellipse(-28, 18, 9, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(28, 18, 9, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes
+      if (isRagdoll || isWild) {
+        // Dizzy spiral eyes (cartoon)
+        ctx.strokeStyle = '#111';
+        ctx.lineWidth = 3;
+        [-18, 18].forEach((ex, i) => {
+          ctx.beginPath();
+          for (let a = 0; a < Math.PI * 2; a += 0.4) {
+            const r = 3 + (a / (Math.PI * 2)) * 7;
+            const px = ex + Math.cos(a + t * (10 + i)) * r;
+            const py = 2 + Math.sin(a + t * (10 + i)) * r;
+            if (a === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        });
+        ctx.lineWidth = 4.5;
+      } else {
+        ctx.fillStyle = '#111';
+        ctx.beginPath();
+        ctx.ellipse(-18, 2, 7, 10, 0, 0, Math.PI * 2);
+        ctx.ellipse(18, 2, 7, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(-20, -2, 3, 0, Math.PI * 2);
+        ctx.arc(16, -2, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Eyebrows
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#111';
+      if (mode === 'scared') {
+        ctx.beginPath();
+        ctx.moveTo(-28, -18); ctx.lineTo(-8, -10);
+        ctx.moveTo(28, -18); ctx.lineTo(8, -10);
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(-18, -14, 10, Math.PI * 1.15, Math.PI * 1.85);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(18, -14, 10, Math.PI * 1.15, Math.PI * 1.85);
+        ctx.stroke();
+      }
+
+      // Purple Glasses
+      ctx.strokeStyle = '#7b2cbf';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(-38, -10, 32, 24);
+      ctx.strokeRect(6, -10, 32, 24);
+      ctx.beginPath();
+      ctx.moveTo(-6, 0);
+      ctx.lineTo(6, 0);
+      ctx.moveTo(-38, -2);
+      ctx.lineTo(-48, 2);
+      ctx.moveTo(38, -2);
+      ctx.lineTo(48, 2);
+      ctx.stroke();
+
+      // Mouth
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 4;
+      if (mode === 'scared' || isRagdoll) {
+        ctx.fillStyle = '#7a1c1c';
+        ctx.beginPath();
+        ctx.ellipse(0, 26, 10, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else if (isWild) {
+        ctx.fillStyle = '#801b1b';
+        ctx.beginPath();
+        ctx.ellipse(0, 24, 18, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#ff6b6b';
+        ctx.beginPath();
+        ctx.ellipse(0, 28, 10, 7, 0, 0, Math.PI);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#801b1b';
+        ctx.beginPath();
+        ctx.arc(0, 20, 16, 0, Math.PI, false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#ff6b6b';
+        ctx.beginPath();
+        ctx.arc(0, 26, 9, 0, Math.PI, false);
+        ctx.fill();
+      }
+
+      // Little cartoon stars when flopped
+      if (isRagdoll) {
+        ctx.fillStyle = '#ffd166';
+        for (let i = 0; i < 3; i++) {
+          const ang = t * 4 + i * 2.1;
+          const sx = Math.cos(ang) * 62;
+          const sy = -40 + Math.sin(ang * 1.3) * 18;
+          ctx.save();
+          ctx.translate(sx, sy);
+          ctx.rotate(ang);
+          ctx.beginPath();
+          for (let p = 0; p < 5; p++) {
+            const a = (p * Math.PI * 2) / 5 - Math.PI / 2;
+            const r = (p % 2 === 0) ? 7 : 3;
+            const px = Math.cos(a) * r, py = Math.sin(a) * r;
+            if (p === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      ctx.restore();
+      ctx.restore();
+    }
+
+    // 3. THE V MONSTER (Fuzzy brown V-shaped monster, two big eyes at tips, maroon bow tie)
+    function drawVMonster(ctx, x, y, scale, t, mode = 'dance') {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      const bounce = Math.abs(Math.sin(t * 9.5)) * 16;
+      const earWiggle = Math.sin(t * 7.5) * 6;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(0, 110, 56, 13, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.translate(0, -bounce);
+
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#1a1108';
+      ctx.fillStyle = '#a86523';
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      const armWave = Math.sin(t * 10) * 0.35;
+      // Left Arm
+      ctx.save();
+      ctx.translate(-36, 18);
+      ctx.rotate(mode === 'scared' ? -1.4 : 0.3 + armWave);
+      ctx.beginPath();
+      ctx.ellipse(-18, 0, 20, 13, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Right Arm
+      ctx.save();
+      ctx.translate(36, 18);
+      ctx.rotate(mode === 'scared' ? 1.4 : -0.3 - armWave);
+      ctx.beginPath();
+      ctx.ellipse(18, 0, 20, 13, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Main V-Shaped Fuzzy Body & Legs
+      ctx.beginPath();
+      ctx.moveTo(0, 62);
+      ctx.lineTo(-10, 95);
+      ctx.quadraticCurveTo(-32, 102, -48, 92);
+      ctx.quadraticCurveTo(-55, 75, -36, 65);
+      ctx.lineTo(-34, 30);
+      ctx.lineTo(-76 + earWiggle, -85);
+      ctx.arc(-50 + earWiggle, -92, 28, Math.PI * 0.9, Math.PI * 1.95);
+      ctx.lineTo(0, -2);
+      ctx.lineTo(24 - earWiggle, -92);
+      ctx.arc(50 - earWiggle, -92, 28, Math.PI * 1.05, Math.PI * 0.1);
+      ctx.lineTo(34, 30);
+      ctx.lineTo(36, 65);
+      ctx.quadraticCurveTo(55, 75, 48, 92);
+      ctx.quadraticCurveTo(32, 102, 10, 95);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Fur texture tufts
+      ctx.strokeStyle = '#6e3f11';
+      ctx.lineWidth = 3;
+      const furSpots = [
+        [-42, -35], [-28, -5], [-16, 20],
+        [42, -35], [28, -5], [16, 20],
+        [-22, 55], [22, 55]
+      ];
+      furSpots.forEach(([fx, fy]) => {
+        ctx.beginPath();
+        ctx.arc(fx, fy, 5, 0.2, Math.PI - 0.2);
+        ctx.arc(fx + 8, fy, 5, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+      });
+
+      // Giant Eyes inside the two top V stalks
+      ctx.strokeStyle = '#1a1108';
+      ctx.lineWidth = 4.5;
+      [-48 + earWiggle, 48 - earWiggle].forEach((ex) => {
+        ctx.fillStyle = '#fff9eb';
+        ctx.beginPath();
+        ctx.arc(ex, -84, 21, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        if (mode === 'scared') {
+          ctx.fillStyle = '#1f140e';
+          ctx.beginPath();
+          ctx.arc(ex, -84, 6, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = '#1f140e';
+          ctx.beginPath();
+          ctx.arc(ex + 2, -84, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#fff';
+          ctx.beginPath();
+          ctx.arc(ex + 5, -88, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Maroon Bow Tie
+      ctx.fillStyle = '#6b1d20';
+      ctx.beginPath();
+      ctx.moveTo(0, 34);
+      ctx.lineTo(-28, 20);
+      ctx.lineTo(-28, 48);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(0, 34);
+      ctx.lineTo(28, 20);
+      ctx.lineTo(28, 48);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#521316';
+      roundRect(ctx, -7, 25, 14, 18, 4);
+
+      ctx.restore();
+    }
+
+    // 4. VIOLIN MAN (Violin body as head/face, scroll & pegs on top, black tuxedo, red bow tie, holding bow)
+    function drawViolinMan(ctx, x, y, scale, t) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      const sway = Math.sin(t * 6.5) * 0.08;
+      const bounce = Math.abs(Math.sin(t * 9)) * 10;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(0, 112, 48, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.translate(0, -bounce);
+      ctx.rotate(sway);
+
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#111';
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Tuxedo Legs & Shoes
+      ctx.fillStyle = '#1c1c1c';
+      roundRect(ctx, -28, 52, 24, 42, 5);
+      roundRect(ctx, 4, 52, 24, 42, 5);
+      ctx.fillStyle = '#111';
+      roundRect(ctx, -36, 86, 34, 20, 10);
+      roundRect(ctx, 2, 86, 34, 20, 10);
+
+      // Black Tuxedo Jacket
+      ctx.fillStyle = '#222';
+      ctx.beginPath();
+      ctx.moveTo(-34, 10);
+      ctx.lineTo(-42, 72);
+      ctx.lineTo(42, 72);
+      ctx.lineTo(34, 10);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // White Dress Shirt & Gold Buttons
+      ctx.fillStyle = '#fff';
+      roundRect(ctx, -15, 12, 30, 42, 4);
+      ctx.fillStyle = '#ffcc00';
+      ctx.beginPath();
+      ctx.arc(0, 28, 4, 0, Math.PI * 2);
+      ctx.arc(0, 40, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Violin Head/Face
+      ctx.save();
+      ctx.translate(0, -42);
+
+      // Violin Scroll & Neck
+      ctx.fillStyle = '#a45a2a';
+      roundRect(ctx, -10, -118, 20, 52, 6);
+      ctx.fillStyle = '#1a1a1a';
+      [-102, -86].forEach((py) => {
+        ctx.beginPath();
+        ctx.arc(-20, py, 6, 0, Math.PI * 2);
+        ctx.arc(20, py, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(-16, py - 2, 32, 4);
+      });
+      ctx.fillStyle = '#b8652e';
+      ctx.beginPath();
+      ctx.arc(0, -122, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Violin Body Shape
+      ctx.fillStyle = '#c46d34';
+      ctx.beginPath();
+      ctx.moveTo(0, -64);
+      ctx.bezierCurveTo(46, -64, 52, -24, 34, -10);
+      ctx.bezierCurveTo(24, -2, 24, 10, 38, 18);
+      ctx.bezierCurveTo(60, 32, 50, 62, 0, 62);
+      ctx.bezierCurveTo(-50, 62, -60, 32, -38, 18);
+      ctx.bezierCurveTo(-24, 10, -24, -2, -34, -10);
+      ctx.bezierCurveTo(-52, -24, -46, -64, 0, -64);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Fingerboard
+      ctx.fillStyle = '#292929';
+      ctx.beginPath();
+      ctx.moveTo(-9, -95);
+      ctx.lineTo(9, -95);
+      ctx.lineTo(13, -34);
+      ctx.lineTo(-13, -34);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Eyes
+      ctx.fillStyle = '#111';
+      ctx.beginPath();
+      ctx.ellipse(-16, -2, 9, 12, 0, 0, Math.PI * 2);
+      ctx.ellipse(16, -2, 9, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(-18, -5, 4, 0, Math.PI * 2);
+      ctx.arc(14, -5, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Smile
+      ctx.fillStyle = '#751a1a';
+      ctx.beginPath();
+      ctx.arc(0, 16, 11, 0, Math.PI, false);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Violin f-holes
+      ctx.strokeStyle = '#361907';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(-24, 18);
+      ctx.bezierCurveTo(-30, 28, -22, 42, -30, 48);
+      ctx.moveTo(24, 18);
+      ctx.bezierCurveTo(30, 28, 22, 42, 30, 48);
+      ctx.stroke();
+
+      ctx.restore();
+
+      // Red Bow Tie
+      ctx.fillStyle = '#d62828';
+      ctx.beginPath();
+      ctx.moveTo(0, 14);
+      ctx.lineTo(-18, 5);
+      ctx.lineTo(-18, 23);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, 14);
+      ctx.lineTo(18, 5);
+      ctx.lineTo(18, 23);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      roundRect(ctx, -5, 9, 10, 10, 3);
+
+      // Left Arm holding Violin Bow
+      const bowRock = Math.sin(t * 14) * 0.38;
+      ctx.save();
+      ctx.translate(-36, 22);
+      ctx.rotate(bowRock);
+      ctx.fillStyle = '#222';
+      roundRect(ctx, -22, -8, 24, 18, 6);
+      ctx.fillStyle = '#c46d34';
+      ctx.beginPath();
+      ctx.arc(-24, 0, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(-26, 0);
+      ctx.rotate(-0.25);
+      ctx.fillStyle = '#6b300b';
+      roundRect(ctx, -5, -105, 8, 125, 2);
+      ctx.fillStyle = '#fdf8e1';
+      ctx.fillRect(3, -100, 4, 112);
+      ctx.restore();
+      ctx.restore();
+
+      // Right Arm
+      ctx.save();
+      ctx.translate(36, 22);
+      ctx.rotate(-0.4);
+      ctx.fillStyle = '#222';
+      roundRect(ctx, 0, -8, 24, 18, 6);
+      ctx.fillStyle = '#c46d34';
+      ctx.beginPath();
+      ctx.arc(24, 0, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.restore();
+    }
+
+    // 5. VIKING (Horned helmet with rivets, bushy brown beard, fur collar, brown tunic, swinging axe)
+    function drawViking(ctx, x, y, scale, t) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      const stomp = Math.abs(Math.sin(t * 11)) * 13;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.beginPath();
+      ctx.ellipse(0, 112, 54, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.translate(0, -stomp);
+
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#111';
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Fur-trimmed Brown Boots
+      ctx.fillStyle = '#5c3818';
+      roundRect(ctx, -34, 62, 28, 42, 8);
+      roundRect(ctx, 6, 62, 28, 42, 8);
+      ctx.fillStyle = '#e3c598';
+      roundRect(ctx, -36, 58, 32, 12, 5);
+      roundRect(ctx, 4, 58, 32, 12, 5);
+
+      // Brown Tunic & Belt
+      ctx.fillStyle = '#6e421c';
+      roundRect(ctx, -38, 10, 76, 54, 10);
+      ctx.fillStyle = '#3d230d';
+      roundRect(ctx, -40, 34, 80, 14, 4);
+      ctx.fillStyle = '#f5b82e';
+      roundRect(ctx, -12, 30, 24, 22, 4);
+
+      // Right Arm with Battle Axe
+      const axeSwing = Math.sin(t * 14) * 0.5;
+      ctx.save();
+      ctx.translate(-42, 22);
+      ctx.rotate(axeSwing);
+      ctx.fillStyle = '#733e14';
+      roundRect(ctx, -28, -78, 12, 120, 4);
+      ctx.fillStyle = '#8d99ae';
+      ctx.beginPath();
+      ctx.moveTo(-22, -72);
+      ctx.lineTo(-68, -92);
+      ctx.quadraticCurveTo(-82, -52, -62, -18);
+      ctx.lineTo(-22, -38);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#f4b987';
+      ctx.beginPath();
+      ctx.arc(-20, 2, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Left Arm
+      ctx.save();
+      ctx.translate(42, 22);
+      ctx.rotate(-0.3 - axeSwing * 0.5);
+      ctx.fillStyle = '#f4b987';
+      ctx.beginPath();
+      ctx.arc(16, 12, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Fur Shoulder Cape Collar
+      ctx.fillStyle = '#e3c598';
+      ctx.beginPath();
+      ctx.ellipse(0, 12, 46, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#adb5bd';
+      ctx.beginPath();
+      ctx.arc(0, 14, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Head & Bushy Beard
+      ctx.save();
+      ctx.translate(0, -42);
+
+      ctx.fillStyle = '#f4b987';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 48, 38, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Beard
+      ctx.fillStyle = '#6f3d17';
+      ctx.beginPath();
+      ctx.moveTo(-48, 0);
+      ctx.quadraticCurveTo(-54, 42, 0, 50);
+      ctx.quadraticCurveTo(54, 42, 48, 0);
+      ctx.quadraticCurveTo(25, 18, 0, 14);
+      ctx.quadraticCurveTo(-25, 18, -48, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Mustache
+      ctx.beginPath();
+      ctx.ellipse(-14, 14, 18, 9, -0.15, 0, Math.PI * 2);
+      ctx.ellipse(14, 14, 18, 9, 0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Fierce Eyes & Thick Angled Brows
+      ctx.fillStyle = '#111';
+      ctx.beginPath();
+      ctx.arc(-18, -2, 8, 0, Math.PI * 2);
+      ctx.arc(18, -2, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(-20, -5, 3, 0, Math.PI * 2);
+      ctx.arc(16, -5, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#4a2508';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(-32, -16);
+      ctx.lineTo(-8, -8);
+      ctx.moveTo(32, -16);
+      ctx.lineTo(8, -8);
+      ctx.stroke();
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 4.5;
+
+      // Horns
+      ctx.fillStyle = '#fff5d6';
+      ctx.beginPath();
+      ctx.moveTo(-44, -22);
+      ctx.quadraticCurveTo(-84, -36, -64, -78);
+      ctx.quadraticCurveTo(-48, -56, -34, -38);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(44, -22);
+      ctx.quadraticCurveTo(84, -36, 64, -78);
+      ctx.quadraticCurveTo(48, -56, 34, -38);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Iron Helmet Dome
+      ctx.fillStyle = '#6c757d';
+      ctx.beginPath();
+      ctx.arc(0, -18, 50, Math.PI, 0, false);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#adb5bd';
+      roundRect(ctx, -52, -26, 104, 14, 4);
+      roundRect(ctx, -10, -68, 20, 54, 4);
+
+      ctx.restore();
+      ctx.restore();
+    }
+
+    // 6. CHOY-SUM MAN (Green superhero suit with 'F' on chest, white bok choy face & leafy green crown)
+    function drawChoySumMan(ctx, x, y, scale, t) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      const bounce = Math.abs(Math.sin(t * 9.5)) * 15;
+      const sway = Math.cos(t * 5) * 0.06;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(0, 112, 48, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.translate(0, -bounce);
+      ctx.rotate(sway);
+
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#111';
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Dark Green Cape
+      ctx.fillStyle = '#1e7023';
+      ctx.beginPath();
+      ctx.moveTo(-32, 6);
+      ctx.lineTo(-56, 86);
+      ctx.lineTo(56, 86);
+      ctx.lineTo(32, 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Legs & Boots
+      ctx.fillStyle = '#4ea82f';
+      roundRect(ctx, -28, 52, 24, 38, 6);
+      roundRect(ctx, 4, 52, 24, 38, 6);
+      ctx.fillStyle = '#76c84d';
+      roundRect(ctx, -34, 82, 32, 22, 10);
+      roundRect(ctx, 2, 82, 32, 22, 10);
+
+      // Green Torso
+      ctx.fillStyle = '#4ea82f';
+      roundRect(ctx, -34, 6, 68, 52, 10);
+
+      // White Belt
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, -35, 42, 70, 12, 3);
+      ctx.fillStyle = '#2d8a1e';
+      ctx.beginPath();
+      ctx.arc(0, 48, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // 'F' Emblem on Chest
+      ctx.font = '900 28px "Segoe UI", Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.lineWidth = 7;
+      ctx.strokeStyle = '#fff';
+      ctx.strokeText('F', 0, 25);
+      ctx.fillStyle = '#111';
+      ctx.fillText('F', 0, 25);
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#111';
+
+      // Arms
+      const wave = Math.sin(t * 10) * 0.35;
+      ctx.save();
+      ctx.translate(-34, 16);
+      ctx.rotate(0.4 + wave);
+      ctx.fillStyle = '#4ea82f';
+      roundRect(ctx, -24, -8, 24, 18, 6);
+      ctx.fillStyle = '#76c84d';
+      ctx.beginPath();
+      ctx.arc(-26, 0, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(34, 16);
+      ctx.rotate(-0.4 - wave);
+      ctx.fillStyle = '#4ea82f';
+      roundRect(ctx, 0, -8, 24, 18, 6);
+      ctx.fillStyle = '#76c84d';
+      ctx.beginPath();
+      ctx.arc(26, 0, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Choy-Sum Head
+      ctx.save();
+      ctx.translate(0, -34);
+
+      const leafPositions = [
+        { x: -34, y: -64, rot: -0.35, r: 36 },
+        { x: 0, y: -78, rot: 0, r: 40 },
+        { x: 34, y: -64, rot: 0.35, r: 36 }
+      ];
+      leafPositions.forEach((lf) => {
+        ctx.save();
+        ctx.translate(lf.x, lf.y);
+        ctx.rotate(lf.rot);
+        ctx.fillStyle = '#2d8a1e';
+        ctx.beginPath();
+        ctx.arc(0, 0, lf.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.strokeStyle = '#a7e971';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(0, 32);
+        ctx.lineTo(0, -18);
+        ctx.moveTo(0, 8);
+        ctx.lineTo(-14, -6);
+        ctx.moveTo(0, 8);
+        ctx.lineTo(14, -6);
+        ctx.stroke();
+        ctx.strokeStyle = '#111';
+        ctx.lineWidth = 4.5;
+        ctx.restore();
+      });
+
+      const grad = ctx.createLinearGradient(0, -45, 0, 38);
+      grad.addColorStop(0, '#c8f299');
+      grad.addColorStop(0.45, '#f6fff0');
+      grad.addColorStop(1, '#ffffff');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(-36, -34);
+      ctx.bezierCurveTo(-54, 12, -46, 40, 0, 40);
+      ctx.bezierCurveTo(46, 40, 54, 12, 36, -34);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(255, 130, 130, 0.55)';
+      ctx.beginPath();
+      ctx.ellipse(-26, 16, 8, 5, 0, 0, Math.PI * 2);
+      ctx.ellipse(26, 16, 8, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#111';
+      ctx.beginPath();
+      ctx.ellipse(-16, 4, 7, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(16, 4, 7, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(-18, 0, 3, 0, Math.PI * 2);
+      ctx.arc(14, 0, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#801b1b';
+      ctx.beginPath();
+      ctx.arc(0, 18, 11, 0, Math.PI, false);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.restore();
+      ctx.restore();
+    }
+
+    // ============================================================================
+    // STAGE & ENVIRONMENT RENDERING
+    // ============================================================================
+
+    function drawEnvironment(ctx, t, scene) {
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, 520);
+      if (scene === 'viking_scary') {
+        skyGrad.addColorStop(0, '#2c1654');
+        skyGrad.addColorStop(1, '#6f3895');
+      } else {
+        skyGrad.addColorStop(0, '#38b6ff');
+        skyGrad.addColorStop(1, '#b8e7ff');
+      }
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Sun
+      ctx.save();
+      ctx.translate(180, 110);
+      const sunPulse = 1 + Math.sin(t * 4) * 0.06;
+      ctx.scale(sunPulse, sunPulse);
+      ctx.fillStyle = scene === 'viking_scary' ? '#ff9e00' : '#ffea00';
+      ctx.beginPath();
+      ctx.arc(0, 0, 52, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#ffaa00';
+      ctx.stroke();
+      ctx.restore();
+
+      // Clouds
+      const cloudPositions = [
+        { baseX: 250, y: 110, speed: 12, scale: 0.9 },
+        { baseX: 700, y: 85, speed: 16, scale: 1.1 },
+        { baseX: 1080, y: 130, speed: 10, scale: 0.85 }
+      ];
+      cloudPositions.forEach((c) => {
+        const cx = ((c.baseX + t * c.speed) % 1400) - 80;
+        ctx.save();
+        ctx.translate(cx, c.y);
+        ctx.scale(c.scale, c.scale);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        ctx.beginPath();
+        ctx.arc(0, 0, 32, 0, Math.PI * 2);
+        ctx.arc(28, -8, 38, 0, Math.PI * 2);
+        ctx.arc(62, 0, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Background Hill (Cobra Man's Stomping Ground)
+      ctx.fillStyle = scene === 'viking_scary' ? '#3c5a3e' : '#65c445';
+      ctx.strokeStyle = '#1b4314';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(-20, 460);
+      ctx.quadraticCurveTo(640, 330, 1300, 460);
+      ctx.lineTo(1300, 720);
+      ctx.lineTo(-20, 720);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Foreground Stage Floor
+      ctx.fillStyle = scene === 'viking_scary' ? '#4f772d' : '#80ed51';
+      ctx.beginPath();
+      ctx.moveTo(-20, 500);
+      ctx.quadraticCurveTo(640, 445, 1300, 500);
+      ctx.lineTo(1300, 720);
+      ctx.lineTo(-20, 720);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    function updateAndDrawEffects(ctx, dt, t, scene) {
+      for (let i = stompPuffs.length - 1; i >= 0; i--) {
+        const p = stompPuffs[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.r += 18 * dt;
+        p.alpha -= 1.2 * dt;
+        if (p.alpha <= 0) {
+          stompPuffs.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.fillStyle = `rgba(180, 165, 195, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      if (scene === 'violin' && Math.random() < 0.16) {
+        floatingNotes.push({
+          x: 640 + (Math.random() - 0.5) * 140,
+          y: 380,
+          vx: (Math.random() - 0.5) * 60,
+          vy: -70 - Math.random() * 40,
+          alpha: 1,
+          symbol: Math.random() > 0.5 ? '♪' : '♫'
+        });
+      }
+
+      for (let i = floatingNotes.length - 1; i >= 0; i--) {
+        const n = floatingNotes[i];
+        n.x += n.vx * dt;
+        n.y += n.vy * dt;
+        n.alpha -= 0.65 * dt;
+        if (n.alpha <= 0) {
+          floatingNotes.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.font = 'bold 38px sans-serif';
+        ctx.fillStyle = `rgba(255, 230, 0, ${n.alpha})`;
+        ctx.strokeStyle = `rgba(0, 0, 0, ${n.alpha})`;
+        ctx.lineWidth = 3;
+        ctx.strokeText(n.symbol, n.x, n.y);
+        ctx.fillText(n.symbol, n.x, n.y);
+        ctx.restore();
+      }
+    }
+
+    function drawGiantVBadge(ctx, t) {
+      ctx.save();
+      ctx.translate(640, 135 + Math.sin(t * 6) * 10);
+      const scale = 1 + Math.abs(Math.sin(t * 8)) * 0.14;
+      ctx.scale(scale, scale);
+
+      ctx.fillStyle = '#ffea00';
+      ctx.strokeStyle = '#d84315';
+      ctx.lineWidth = 8;
+      ctx.font = '900 105px "Segoe UI", Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeText('V', 0, 0);
+      ctx.fillText('V', 0, 0);
+      ctx.restore();
+    }
+
+    // ============================================================================
+    // MAIN ANIMATION LOOP
+    // ============================================================================
+
+    function renderLoop(now) {
+      const dt = Math.min(0.1, (now - lastFrameTime) / 1000);
+      lastFrameTime = now;
+
+      let currentTime = 0;
+      if (hasAudio) {
+        currentTime = audioPlayer.currentTime;
+      } else {
+        if (isPlaying) {
+          simTime += dt;
+          if (simTime >= totalDuration) {
+            simTime = totalDuration;
+            isPlaying = false;
+            playBtn.textContent = '▶ Play';
+          }
+        }
+        currentTime = simTime;
+      }
+
+      // Sync UI scrubber & timer
+      scrubber.value = currentTime;
+      timeReadout.textContent = `${currentTime.toFixed(2).padStart(5, '0')}s / ${totalDuration.toFixed(2)}s`;
+
+      // Get current SRT lyric & scene state
+      const step = getCurrentStep(currentTime);
+      if (lyricText.innerHTML !== step.html) {
+        lyricText.innerHTML = step.html;
+        lyricSub.textContent = step.sub;
+      }
+
+      // 1. Draw Sky, Hills & Stage
+      drawEnvironment(ctx, currentTime, step.scene);
+
+      // 2. Cobra Man patrols the background hill (y = depth for draw order)
+      const cobraX = 640 + Math.sin(currentTime * 0.95) * 340;
+      const cobraY = 335 + Math.abs(Math.sin(currentTime * 0.95)) * 22;
+      cobraState.x = cobraX;
+      cobraState.y = cobraY;
+      cobraState.scale = 0.72;
+
+      updateAndDrawEffects(ctx, dt, currentTime, step.scene);
+
+      // 3. Ground characters — sorted by y so front/back depth is correct
+      const phonicMode = step.scene === 'viking_scary' ? 'scared' : (step.scene === 'finale' || step.scene === 'outro' ? 'cheer' : 'dance');
+      const vMonsterMode = step.scene === 'viking_scary' ? 'scared' : 'dance';
+
+      updatePhonicsPlayer(dt);
+
+      const actors = [];
+      actors.push({
+        y: cobraState.y,
+        tie: 0,
+        draw: () => drawCobraMan(ctx, cobraState.x, cobraState.y, cobraState.scale, currentTime)
+      });
+
+      const pushPhonics = (defaultX, defaultY, scale, mode) => {
+        // When player-controlled, use live y for sorting + depth scale
+        if (phonicsPlayer.active) {
+          phonicsPlayer.baseScale = scale;
+          applyPhonicsDepthScale();
+        }
+        const py = phonicsPlayer.active ? phonicsPlayer.y : defaultY;
+        actors.push({
+          y: py,
+          tie: 2,
+          draw: () => drawControlledOrScenePhonics(ctx, defaultX, defaultY, scale, currentTime, mode)
+        });
+      };
+
+      if (step.scene === 'intro' || step.scene === 'v_intro') {
+        drawGiantVBadge(ctx, currentTime);
+        pushPhonics(430, 445, 1.05, phonicMode);
+        actors.push({ y: 450, tie: 3, draw: () => drawVMonster(ctx, 830, 450, 1.05, currentTime, vMonsterMode) });
+      } else if (step.scene === 'violin') {
+        pushPhonics(240, 455, 0.92, phonicMode);
+        actors.push({ y: 450, tie: 3, draw: () => drawViolinMan(ctx, 640, 450, 1.15, currentTime) });
+        actors.push({ y: 455, tie: 4, draw: () => drawVMonster(ctx, 1020, 455, 0.92, currentTime, vMonsterMode) });
+      } else if (step.scene === 'viking' || step.scene === 'viking_scary') {
+        pushPhonics(220, 455, 0.92, phonicMode);
+        actors.push({ y: 445, tie: 3, draw: () => drawViking(ctx, 640, 445, 1.2, currentTime) });
+        actors.push({ y: 455, tie: 4, draw: () => drawVMonster(ctx, 1040, 455, 0.92, currentTime, vMonsterMode) });
+      } else if (step.scene === 'vegetable') {
+        pushPhonics(240, 455, 0.92, phonicMode);
+        actors.push({ y: 450, tie: 3, draw: () => drawChoySumMan(ctx, 640, 450, 1.15, currentTime) });
+        actors.push({ y: 455, tie: 4, draw: () => drawVMonster(ctx, 1020, 455, 0.92, currentTime, vMonsterMode) });
+      } else {
+        // Finale & Outro (29.80s onwards): Everyone on stage dancing together!
+        drawGiantVBadge(ctx, currentTime);
+        pushPhonics(175, 460, 0.85, 'cheer');
+        actors.push({ y: 465, tie: 3, draw: () => drawViolinMan(ctx, 410, 465, 0.85, currentTime) });
+        actors.push({ y: 455, tie: 4, draw: () => drawVMonster(ctx, 640, 455, 0.95, currentTime, 'dance') });
+        actors.push({ y: 465, tie: 5, draw: () => drawViking(ctx, 870, 465, 0.85, currentTime) });
+        actors.push({ y: 465, tie: 6, draw: () => drawChoySumMan(ctx, 1105, 465, 0.85, currentTime) });
+      }
+
+      drawActorsByDepth(actors);
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
+  </script>
+</body>
+</html>
