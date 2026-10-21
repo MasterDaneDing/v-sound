@@ -434,8 +434,8 @@
     // ============================================================================
     const PHONICS_X_MIN = 90;
     const PHONICS_X_MAX = 1190;
-    // Grounded hill/stage band — no sky-flying (old min 250 looked airborne)
-    const PHONICS_Y_MIN = 380;
+    // Grounded hill/stage band — min reaches Cobra Man's depth plane (~335–357)
+    const PHONICS_Y_MIN = 320;
     const PHONICS_Y_MAX = 555;
     const PHONICS_MODES = ['dance', 'cheer', 'scared', 'wild'];
 
@@ -668,8 +668,8 @@
 
     function depthFactorFromY(y) {
       const t = Math.max(0, Math.min(1, (y - PHONICS_Y_MIN) / (PHONICS_Y_MAX - PHONICS_Y_MIN)));
-      // Farther back (low y) = smaller; foreground (high y) = a bit larger
-      return 0.82 + t * 0.28;
+      // Farther back (low y) = much smaller; foreground (high y) = clearly larger
+      return 0.55 + t * 0.90;
     }
 
     function applyPhonicsDepthScale() {
@@ -727,11 +727,11 @@
       if (phonicsPlayer.hitCooldown > 0) return;
       const dx = phonicsPlayer.x - cobraState.x;
       const dy = phonicsPlayer.y - cobraState.y;
+      // Same depth plane only — not when clearly in front/behind of Cobra
+      const depthTol = 40;
+      if (Math.abs(dy) > depthTol) return;
       const hitRx = 78 * cobraState.scale + 55 * (phonicsPlayer.scale || 1);
-      const hitRy = 62 * cobraState.scale + 48 * (phonicsPlayer.scale || 1);
-      const nx = dx / hitRx;
-      const ny = dy / hitRy;
-      if (nx * nx + ny * ny < 1) {
+      if (Math.abs(dx) < hitRx) {
         startRagdoll();
       }
     }
